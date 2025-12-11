@@ -1,1 +1,376 @@
 
+<!doctype html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Vũ Thị Minh Anh 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --accent: #ff8fb7;
+    --accent-dark: #ff5e8a;
+  }
+  * { box-sizing: border-box; font-family: "Inter", sans-serif; }
+  body {
+    margin: 0;
+    height: 100vh;
+    background: radial-gradient(circle at 30% 30%, #1a1035, #0b0618 80%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+  }
+  .card {
+    text-align: center;
+    padding: 28px 32px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  input {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    outline: none;
+  }
+  button {
+    padding: 10px 16px;
+    margin-left: 8px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  button:hover { transform: scale(1.05); }
+  .shake { animation: shake 0.4s; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    50%{transform:translateX(6px);}
+    75%{transform:translateX(-3px);}
+  }
+  .scene {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 40%, #260926, #09010c 80%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+  }
+  .scene.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .heart-text {
+    font-family: 'Great Vibes', cursive;
+    font-size: 56px;
+    color: #fff;
+    text-shadow: 0 0 15px #ffb3c1, 0 0 35px #ff8fb7;
+    animation: glow 2s ease-in-out infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes glow {
+    0%,100%{filter:brightness(1);}
+    50%{filter:brightness(1.3);}
+  }
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="card" id="login">
+    <h2>Người đẹp xin hãy cho biết tên💗</h2>
+    <input type="password" id="pw" placeholder="Nhập tên bạn vào đây..." />
+    <button id="btn">Mở</button>
+  </div>
+
+  <div class="scene" id="scene">
+    <div class="heart-text" id="heartText">Minh Anh</div>
+    <canvas id="heartCanvas"></canvas>
+  </div>
+
+<script>
+
+
+(() => {
+  const pwInput = document.getElementById("pw");
+  const btn = document.getElementById("btn");
+  const login = document.getElementById("login");
+  const scene = document.getElementById("scene");
+  const heartText = document.getElementById("heartText");
+  const canvas = document.getElementById("heartCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // === Thêm checkbox hiện mật khẩu ===
+  const showPw = document.createElement("label");
+  showPw.style.display = "block";
+  showPw.style.marginTop = "8px";
+  showPw.innerHTML = '<input type="checkbox" id="showPw"> Hiện mật khẩu';
+  login.appendChild(showPw);
+
+  const showPwCheck = document.getElementById("showPw");
+  showPwCheck.addEventListener("change", () => {
+    pwInput.type = showPwCheck.checked ? "text" : "password";
+  });
+
+  // === Thêm lưu mật khẩu ===
+  const savePw = document.createElement("label");
+  savePw.style.display = "block";
+  savePw.style.marginTop = "4px";
+  savePw.innerHTML = '<input type="checkbox" id="savePw"> Ghi nhớ mật khẩu';
+  login.appendChild(savePw);
+
+  const savePwCheck = document.getElementById("savePw");
+  const saved = localStorage.getItem("savedPW");
+  if (saved) {
+    pwInput.value = saved;
+    savePwCheck.checked = true;
+  }
+
+  btn.addEventListener("click", checkPassword);
+  pwInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") checkPassword();
+  });
+
+  function checkPassword() {
+    const value = pwInput.value.trim();
+
+    if (
+  value === "Minh Anh" ||
+  value === "minh anh" ||
+  value === "minhanh" ||
+  value === "Minhanh" ||
+  value === "MinhAnh"
+) {
+ {
+      if (savePwCheck.checked) {
+        localStorage.setItem("savedPW", value);
+      } else {
+        localStorage.removeItem("savedPW");
+      }
+
+      login.style.opacity = 0;
+      setTimeout(() => {
+        login.style.display = "none";
+        scene.classList.add("show");
+        heartText.style.display = "none";
+        startHeart();
+        showSequence(value);
+      }, 500);
+    } else {
+      pwInput.classList.add("shake");
+      setTimeout(() => pwInput.classList.remove("shake"), 400);
+    }
+  }
+
+  async function showSequence(value) {
+    // Hiện "Chào em-Minh Anh"
+    const hello = document.createElement("div");
+    hello.className = "heart-text";
+    hello.textContent = "Chào em,Minh Anh 💖";
+    scene.appendChild(hello);
+    await sleep(2000);
+    hello.remove();
+
+    // Các câu giới thiệu tuần tự
+    const introLines = [
+      "Giới thiệu với Dương",
+      "Tôi tên là Minh",
+      'Một trong những "nạn nhân" gục ngã trước nhan sắc của bạn',
+      "Không biết rằng bạn có nhận ra tôi không",
+      "Có thể là không vì tôi mờ nhạt lắm",
+      "NÊN",
+      "Để tránh điều đó lặp lại thì:"
+    ];
+
+    for (let line of introLines) {
+      const lineEl = document.createElement("div");
+      lineEl.className = "heart-text";
+      lineEl.textContent = line;
+      scene.appendChild(lineEl);
+      await sleep(1500);
+      lineEl.remove();
+    }
+
+    // Sau khi xong các câu giới thiệu → đến "Bạn cho mình làm quen nhé?"
+    const invite = document.createElement("div");
+    invite.className = "heart-text";
+    invite.textContent = "Bạn cho mình làm quen nhé?";
+    scene.appendChild(invite);
+
+    // Thêm 2 nút lựa chọn
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.style.marginTop = "30px";
+    buttonsDiv.style.position = "relative";
+    buttonsDiv.style.zIndex = "1000";
+    buttonsDiv.style.pointerEvents = "auto";
+
+    const yesBtn = document.createElement("button");
+    const noBtn = document.createElement("button");
+    yesBtn.textContent = "Đương nhiên rồii";
+    noBtn.textContent = "Để tôi xem xét";
+
+    const baseBtnStyle = `
+      padding: 10px 18px;
+      margin: 0 8px;
+      border-radius: 10px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      font-size: 16px;
+    `;
+    yesBtn.style.cssText = baseBtnStyle + "background: linear-gradient(135deg, #ff8fb7, #ff5e8a); color: #fff;";
+    noBtn.style.cssText = baseBtnStyle + "background: linear-gradient(135deg, #999, #555); color: #fff;";
+
+    buttonsDiv.appendChild(yesBtn);
+    buttonsDiv.appendChild(noBtn);
+    scene.appendChild(buttonsDiv);
+
+    let noClickCount = 0;
+    noBtn.addEventListener("click", () => {
+      noClickCount++;
+      let shrink = Math.max(1 - noClickCount * 0.15, 0);
+      noBtn.style.transform = `scale(${shrink})`;
+      yesBtn.style.transform = `scale(${1 + noClickCount * 0.15})`;
+      if (noClickCount >= 5) {
+        noBtn.style.display = "none";
+      }
+    });
+
+    yesBtn.addEventListener("click", async () => {
+      invite.remove();
+      buttonsDiv.remove();
+
+      const msg = document.createElement("div");
+      msg.className = "heart-text";
+      msg.textContent = " Bạn đồng ý nhanh vậy sao =))";
+      scene.appendChild(msg);
+
+      await sleep(3500);
+      msg.remove();
+
+      // Đoạn cảm ơn cuối cùng
+      const finalMsg = document.createElement("div");
+      finalMsg.className = "heart-text";
+      finalMsg.style.maxWidth = "80%";
+      finalMsg.style.fontSize = "28px";
+      finalMsg.style.textAlign = "center";
+      finalMsg.style.lineHeight = "1.6";
+      finalMsg.style.animation = "fadeIn 3s ease forwards";
+      finalMsg.innerHTML = `
+        Cảm ơn Người đẹp đã click vào link này 💌<br><br>
+        Mình để ý bạn cũng được 1 thời gian rồi nhưng chẳng dám mở lời, để lâu trong lòng lại day dứt không thôi..<br>
+        Nay gửi đến bạn lời mời, mong rằng mình có thể tạo thêm mối quan hệ mới=))<br><br>
+         <strong> Toi đợi câu trả lời của bạn nha 💖</strong>
+         <small>Cái nền nó hơi ấy=))Bạn thông cảm he<br><br></small>
+      `;
+      scene.appendChild(finalMsg);
+    });
+
+    await sleep(3000);
+  }
+
+  function startHeart() {
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    let particles = [];
+    const particleCount = 600;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const scale = Math.min(canvas.width, canvas.height) / 30;
+
+    for (let i = 0; i < particleCount; i++) {
+      const t = Math.random() * 2 * Math.PI;
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y =
+        -(
+          13 * Math.cos(t) -
+          5 * Math.cos(2 * t) -
+          2 * Math.cos(3 * t) -
+          Math.cos(4 * t)
+        );
+      particles.push({
+        x: centerX + x * scale + (Math.random() - 0.5) * 10,
+        y: centerY + y * scale + (Math.random() - 0.5) * 10,
+        size: Math.random() * 4 + 2,
+        alpha: Math.random() * 0.8 + 0.2,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+      });
+    }
+
+    function drawHeart() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (Math.random() < 0.01) {
+          p.dx = (Math.random() - 0.5) * 0.5;
+          p.dy = (Math.random() - 0.5) * 0.5;
+        }
+        drawSmallHeart(p.x, p.y, p.size, `rgba(255, 105, 145, ${p.alpha})`);
+      });
+      requestAnimationFrame(drawHeart);
+    }
+
+    drawHeart();
+  }
+
+  function drawSmallHeart(x, y, size, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-Math.PI / 4);
+    ctx.scale(size / 15, size / 15);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(0, -3, -5, -15, -15, -15);
+    ctx.bezierCurveTo(-25, -15, -30, -5, -30, 0);
+    ctx.bezierCurveTo(-30, 10, -20, 20, 0, 30);
+    ctx.bezierCurveTo(20, 20, 30, 10, 30, 0);
+    ctx.bezierCurveTo(30, -5, 25, -15, 15, -15);
+    ctx.bezierCurveTo(5, -15, 0, -3, 0, 0);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function sleep(ms) {
+    return new Promise((res) => setTimeout(res, ms));
+  }
+
+  // Hiệu ứng mờ dần xuất hiện cho lời nhắn cuối
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  `;
+  document.head.appendChild(style);
+})();
+</script>
